@@ -1,0 +1,68 @@
+name: contacts_app
+description: Contacts app
+
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_svg: ^0.22.0
+  cupertino_icons: ^1.0.2
+  flutter_bloc: ^7.0.1
+  hive: ^2.0.4
+  rxdart: ^0.26.0
+
+dev_dependencies:
+  hive_generator: ^1.1.0
+  build_runner: ^1.8.0
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - lib/assets/
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+#    - family: Medium
+#      fonts:
+#        - asset: lib/fonts/Roboto-Medium.ttf
+#    - family: Regular
+#      fonts:
+#        - asset: lib/fonts/Roboto-Regular.ttf
+    - family: Bold
+      fonts:
+        - asset: lib/fonts/Montserrat-Black.ttf
+#    - family: TTMedium
+#      fonts:
+#        - asset: lib/fonts/TTCommons-Medium.ttf
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
