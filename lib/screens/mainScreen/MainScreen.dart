@@ -1,7 +1,9 @@
 
 
+import 'package:contacts_app/screens/mainScreen/MainScreenBLoC.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,17 +17,29 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   TabController _controller;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
     _controller = TabController(initialIndex: 1, length: 3, vsync: this);
+
+    _controller.addListener((){
+      if (_controller.index == 0)
+        context.read<MainScreenBloc>().add(MainScreenBlocEvent.first);
+      else if (_controller.index == 1)
+        context.read<MainScreenBloc>().add(MainScreenBlocEvent.second);
+      else if (_controller.index == 2)
+        context.read<MainScreenBloc>().add(MainScreenBlocEvent.third);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return DefaultTabController(
       length: 3,
-
       child: Scaffold(
           body: Stack(
             children: [
-
-
               TabBarView(
                 controller: _controller,
                 children: [
@@ -40,26 +54,40 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                   height: 70,
                   width: double.infinity,
                   color: Colors.white,
-                  child: TabBar(
-                      controller: _controller,
+                  child: BlocBuilder<MainScreenBloc, List<Color>>(
+                      builder: (context, colorList){
+                        return TabBar(
+                          controller: _controller,
 
-                      tabs: [
-                        Tab(child: SvgPicture.asset(
-                            'lib/assets/icon_history.svg',
-                        ),),
-                        Tab(child: SvgPicture.asset(
-                          'lib/assets/icon_backup.svg',
-                        ),),
-                        Tab(child: SvgPicture.asset(
-                          'lib/assets/icon_settings.svg',
-                        ),),
-                      ],
+                          tabs: [
+                            Tab(
+                              child: SvgPicture.asset(
+                                'lib/assets/icon_history.svg',
+                                color: colorList[0],
+                              ),
+                            ),
+                            Tab(
+                              child: SvgPicture.asset(
+                                'lib/assets/icon_backup.svg',
+                                color: colorList[1],
+                              ),
+                            ),
+                            Tab(
+                              child: SvgPicture.asset(
+                                'lib/assets/icon_settings.svg',
+                                color: colorList[2],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      ),
                 ),
-              )
               )
             ],
           )),
     );
+
   }
 
   Widget firstTab(BuildContext context){
