@@ -1,11 +1,15 @@
 
-
+import 'dart:io';
 import 'package:contacts_app/storageModels/StorageModel.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:intl/intl.dart';
 import 'package:contacts_app/vcard/vcard.dart';
+import 'package:flutter_share_file/flutter_share_file.dart';
+import 'package:share/share.dart';
+
 
 class MainScreenBloc {
 
@@ -26,7 +30,7 @@ class MainScreenBloc {
     _mainListStream.sink.add(mainList);
   }
 
-  void loadContactsToFile(Iterable<Contact> contacts){
+  void loadContactsToFile(Iterable<Contact> contacts) async {
 
     final now = new DateTime.now();
 
@@ -39,25 +43,40 @@ class MainScreenBloc {
     time = amPm;
 
 
+    VCard globalCard = VCard();
+    String globalFormattedString = "";
 
+    for (final contact in contacts) {
+      var vCard = VCard();
+      //print(contact.androidAccountName + " displayName");
 
-//    for (final contact in contacts) {
-//      var vCard = VCard();
-//      print(contact.displayName);
-//      //vCard.firstName = contact.displayName.split(' ')[0];
-//      vCard.middleName = 'MiddleName';
-//      vCard.lastName = 'LastName';
-//      vCard.organization = 'ActivSpaces Labs';
-//      vCard.photo.attachFromUrl('/path/to/image/file.png', 'PNG');
-//      vCard.workPhone = 'Work Phone Number';
-//      vCard.birthday = DateTime.now();
-//      //vCard.title = 'Software Developer';
-//      vCard.url = 'https://github.com/valerycolong';
-//      vCard.note = 'Notes on contact';
-//
-//      /// Save to file
-//      //vCard.saveToFile('./contact.vcf');
-//    }
+      vCard.formattedName = contact.displayName;
+      for (var phone in contact.phones)
+        if (phone.label == 'mobile')
+          vCard.workPhone = phone.value;
+        else if (phone.label == 'home')
+          vCard.homePhone = phone.value;
+
+      vCard.organization = 'ActivSpaces Labs';
+      //vCard.photo.attachFromUrl(, 'PNG');
+      //vCard.birthday = DateTime.now();
+      //vCard.title = 'Software Developer';
+      vCard.url = 'https://github.com/valerycolong';
+      vCard.note = 'Notes on contact';
+      String formattedString = vCard.getFormattedString();
+      globalFormattedString += formattedString;
+      /// Save to file
+      //vCard.saveToFile('./contact.vcf');
+    }
+    //print(globalFormattedString);
+    String fileName = amPm.replaceAll(":", '') + '.vcf';
+    File file = await globalCard.saveMultiContactsToFile(fileName, globalFormattedString);
+    final directory = await getApplicationDocumentsDirectory();
+    print(file.path);
+    print(await file.length());
+    //FlutterShareFile.share('${directory.path}/', fileName, ShareFileType.file);
+    Share.shareFiles(['${directory.path}/' + fileName], text: 'Great file');
+
   }
 
   void saveFile(){

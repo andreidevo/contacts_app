@@ -255,13 +255,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         GestureDetector(
           onTap: () async {
 
+//            var storage = await Permission.storage.status;
+//
+//            if (storage.isUndetermined)
+//              await Permission.storage.request();
+//            if (storage.isDenied)
+//              await Permission.storage.request();
+
             var status = await Permission.contacts.status;
-            print(status);
 
             if (status.isUndetermined)
               await Permission.contacts.request();
             if (status.isDenied)
               await Permission.contacts.request();
+
+//            print(storage);
+            print(status);
 
             if (status.isGranted){
               Iterable<Contact> contacts = await ContactsService.getContacts();
