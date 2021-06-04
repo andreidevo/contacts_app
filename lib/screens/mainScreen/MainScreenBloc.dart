@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:intl/intl.dart';
-import 'package:vcard/vcard.dart';
+import 'package:contacts_app/vcard/vcard.dart';
 
 class MainScreenBloc {
 
