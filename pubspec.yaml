@@ -14,7 +14,9 @@ dependencies:
     sdk: flutter
 
   flutter_svg: ^0.22.0
+  shared_preferences: ^0.5.12+4
   cupertino_icons: ^1.0.2
+  path_provider: ^1.6.28
   flutter_bloc: ^7.0.1
   hive: ^2.0.4
   rxdart: ^0.26.0
@@ -62,6 +64,9 @@ flutter:
     - family: Bold
       fonts:
         - asset: lib/fonts/Montserrat-Black.ttf
+    - family: SemiBold
+      fonts:
+        - asset: lib/fonts/Montserrat-SemiBold.otf
 #    - family: TTMedium
 #      fonts:
 #        - asset: lib/fonts/TTCommons-Medium.ttf

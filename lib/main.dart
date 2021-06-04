@@ -1,12 +1,13 @@
+import 'package:contacts_app/screens/gerenalModel.dart';
 import 'package:contacts_app/screens/mainScreen/MainScreen.dart';
-import 'package:contacts_app/screens/mainScreen/MainScreenBLoC.dart';
+import 'package:contacts_app/screens/mainScreen/MainScreenTabsBLoc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter/services.dart' ;
 
 void main() {
-//  WidgetsFlutterBinding.ensureInitialized();
-//  generalModel.initHiveFunction();
+  WidgetsFlutterBinding.ensureInitialized();
+  generalModel.initHiveFunction();
   runApp(MyApp());
 }
 
@@ -15,12 +16,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MainScreenBloc(),
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => MainScreenTapBloc(),
+        ),
+//        BlocProvider(
+//          create: (context) => MainScreenBackBloc(),)
+      ],
       child: MaterialApp(
-        title: "Contacts",
-        debugShowCheckedModeBanner: false,
-        home: MainScreen()
+          title: "Contacts",
+          debugShowCheckedModeBanner: false,
+          home: MainScreen()
 
 
       ),
