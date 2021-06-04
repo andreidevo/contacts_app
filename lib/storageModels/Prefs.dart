@@ -59,6 +59,5 @@ class PreferencesHelper {
     return p.setDouble(key, value);
   }
 
-  // helper
   static Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 }

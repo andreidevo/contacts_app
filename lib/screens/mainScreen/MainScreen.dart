@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 import 'MainScreenBloc.dart';
 
@@ -170,16 +172,45 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                 fit: BoxFit.fill,
               ),
             )),
-        Center(
-          child: Image.asset(
-            'lib/assets/white_circle.png',
-            fit: BoxFit.cover,
+        GestureDetector(
+          onTap: () async {
+
+
+            //Iterable<Contact> contacts = await ContactsService.getContacts();
+            var status = await Permission.contacts.status;
+            print(status);
+
+            if (status.isUndetermined)
+              await Permission.contacts.request();
+            if (status.isDenied)
+              await Permission.contacts.request();
+
+
+          },
+          child: Center(
+            child: Image.asset(
+              'lib/assets/white_circle.png',
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        Center(
-          child: Image.asset(
-            'lib/assets/circle_create.png',
-            fit: BoxFit.cover,
+        GestureDetector(
+          onTap: () async {
+            var status = await Permission.contacts.status;
+            print(status);
+
+            if (status.isUndetermined)
+              await Permission.contacts.request();
+            if (status.isDenied)
+              await Permission.contacts.request();
+
+
+          },
+          child: Center(
+            child: Image.asset(
+              'lib/assets/circle_create.png',
+              fit: BoxFit.cover,
+            ),
           ),
         ),
 
@@ -221,15 +252,33 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
         ),
 
     //
-        Center(
-          child: Text(
-            "Create\nBackup",
-            textAlign: TextAlign.center,
-            style: TextStyle(
+        GestureDetector(
+          onTap: () async {
 
-                fontSize: 28,
-                fontFamily: 'Bold',
-                color: Colors.white
+            var status = await Permission.contacts.status;
+            print(status);
+
+            if (status.isUndetermined)
+              await Permission.contacts.request();
+            if (status.isDenied)
+              await Permission.contacts.request();
+
+            if (status.isGranted){
+              Iterable<Contact> contacts = await ContactsService.getContacts();
+              mainScreenBloc.loadContactsToFile(contacts);
+            }
+
+          },
+          child: Center(
+            child: Text(
+              "Create\nBackup",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+
+                  fontSize: 28,
+                  fontFamily: 'Bold',
+                  color: Colors.white
+              ),
             ),
           ),
         ),

@@ -21,6 +21,8 @@ dependencies:
   hive: ^2.0.4
   rxdart: ^0.26.0
   vcard: ^0.1.1
+  permission_handler: ^5.0.1
+  contacts_service: ^0.4.6
 
 dev_dependencies:
   hive_generator: ^1.1.0

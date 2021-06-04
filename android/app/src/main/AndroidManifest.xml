@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="bringex.flutter.contacts_app">
-   <application
+
+
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+
+    <application
         android:label="contacts_app"
         android:icon="@mipmap/ic_launcher">
         <activity
