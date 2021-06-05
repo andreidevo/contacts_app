@@ -41,37 +41,4 @@ class MainScreenTapBloc extends Bloc<MainScreenTapEvent, dynamic>{
         break;
     }
   }
-
-
 }
-
-
-enum MainScreenBackEvent {
-  click,
-//  loading,
-//  ChangeTapThird,
-
-}
-
-//class MainScreenBackBloc extends Bloc<MainScreenBackEvent, dynamic>{
-//  MainScreenBackBloc() : super(1);
-//
-//
-//  @override
-//  Stream<dynamic> mapEventToState(MainScreenBackEvent event) async* {
-//    switch (event) {
-//      case MainScreenBackEvent.click:
-//        someWorkFunction();
-//        break;
-//
-//    }
-//  }
-//
-//  void someWorkFunction(){
-//
-//  }
-//
-//}
-//
-//
-

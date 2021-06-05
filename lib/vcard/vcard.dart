@@ -1,7 +1,9 @@
 
+
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:flutter_share_file/flutter_share_file.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:contacts_app/validators/validators.dart';
@@ -138,6 +140,13 @@ class VCard {
     final directory = await getApplicationDocumentsDirectory();
     final fs = File('${directory.path}/vCard/exports/$filename');
     fs.writeAsStringSync(contents);
+  }
+
+  Future<File> saveMultiContactsToFile(filename, String contents) async {
+
+    final directory = await getApplicationDocumentsDirectory();
+    final fs = File('${directory.path}/$filename');
+    return fs.writeAsString(contents);
   }
 
   /// Get social media URLs

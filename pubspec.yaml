@@ -28,6 +28,7 @@ dependencies:
   vcard: ^0.1.0
   flutter_share_file: ^1.2.1+6
   share: ^2.0.4
+  url_launcher: ^6.0.0-nullsafety.7
 
 dev_dependencies:
   hive_generator: ^1.1.0

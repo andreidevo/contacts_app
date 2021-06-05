@@ -16,6 +16,5 @@ class StorageModel extends HiveObject{
   final String pathFileVcf;
 
 
-
   StorageModel({this.data, this.time, this.countContacts, this.fileMemory, this.pathFileVcf});
 }

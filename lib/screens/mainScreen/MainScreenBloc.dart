@@ -9,37 +9,56 @@ import 'package:intl/intl.dart';
 import 'package:contacts_app/vcard/vcard.dart';
 import 'package:flutter_share_file/flutter_share_file.dart';
 import 'package:share/share.dart';
+import 'package:contacts_app/screens/gerenalModel.dart';
 
 
+enum StateScreen{
+  INIT,
+  LOADING,
+  END
+}
 class MainScreenBloc {
 
   BehaviorSubject<List<StorageModel>> _mainListStream = BehaviorSubject<List<StorageModel>>();
   BehaviorSubject<List<StorageModel>> get mainListStream => _mainListStream;
 
 
-  //6465F9
+  BehaviorSubject<double> _updateProgressNumber = BehaviorSubject<double>();
+  BehaviorSubject<double> _updateProgressSize = BehaviorSubject<double>();
+  BehaviorSubject<StateScreen> _isLoadingNow = BehaviorSubject<StateScreen>();
 
+  BehaviorSubject<double> get updateProgressSizeStream => _updateProgressSize;
+  BehaviorSubject<double> get updateProgressNumberStream => _updateProgressNumber;
+  BehaviorSubject<StateScreen> get isLoadingNowStream => _isLoadingNow;
 
+  double numberProgress = 0;
+  double circleSize = 0;
 
   List<StorageModel> mainList = [];
-  Box<StorageModel> listStorage;
 
 
-  void updateMainListStream(StorageModel storageModels){
-    mainList.add(storageModels);
+  void updateMainListStream(StorageModel storageModel){
+    mainList.add(storageModel);
+    _mainListStream.sink.add(mainList);
+  }
+  void createNewCard(StorageModel storageModel){
+    generalModel.addNewCard(storageModel);
+    mainList.add(storageModel);
     _mainListStream.sink.add(mainList);
   }
 
+
   void loadContactsToFile(Iterable<Contact> contacts) async {
+    _isLoadingNow.sink.add(StateScreen.LOADING);
+    changeProgressNumberAndSize(100);
 
     final now = new DateTime.now();
-
-    int lenContacts = contacts.length;
+    String lenContacts = contacts.length.toString();
     String year = now.year.toString();
     String month = getMonth(now.month);
+    String day = now.day.toString();
     String time = now.hour.toString() + ":" + now.minute.toString();
     String amPm = DateFormat.jm().format(DateFormat("hh:mm:ss").parse(time+":00")).replaceAll(' ', '');
-    print(amPm);
     time = amPm;
 
 
@@ -48,66 +67,100 @@ class MainScreenBloc {
 
     for (final contact in contacts) {
       var vCard = VCard();
-      //print(contact.androidAccountName + " displayName");
 
       vCard.formattedName = contact.displayName;
-      for (var phone in contact.phones)
-        if (phone.label == 'mobile')
-          vCard.workPhone = phone.value;
-        else if (phone.label == 'home')
-          vCard.homePhone = phone.value;
+      for (var phone in contact.emails)
+        print(phone.label);
+      print(contact.avatar);
+      vCard.birthday = contact.birthday;
+      vCard.organization = contact.company;
+      vCard.jobTitle = contact.jobTitle;
 
-      vCard.organization = 'ActivSpaces Labs';
-      //vCard.photo.attachFromUrl(, 'PNG');
-      //vCard.birthday = DateTime.now();
-      //vCard.title = 'Software Developer';
-      vCard.url = 'https://github.com/valerycolong';
-      vCard.note = 'Notes on contact';
       String formattedString = vCard.getFormattedString();
       globalFormattedString += formattedString;
-      /// Save to file
-      //vCard.saveToFile('./contact.vcf');
+      //changeProgressNumberAndSize(contacts.length);
     }
-    //print(globalFormattedString);
+
+
     String fileName = amPm.replaceAll(":", '') + '.vcf';
     File file = await globalCard.saveMultiContactsToFile(fileName, globalFormattedString);
-    final directory = await getApplicationDocumentsDirectory();
-    print(file.path);
-    print(await file.length());
-    //FlutterShareFile.share('${directory.path}/', fileName, ShareFileType.file);
-    Share.shareFiles(['${directory.path}/' + fileName], text: 'Great file');
+
+    //_isLoadingNow.sink.add(StateScreen);
+
+
+
+    int bytesFile = await file.length();
+    StorageModel storageModels = StorageModel(
+      countContacts: lenContacts,
+      fileMemory: (bytesFile / 1024).toStringAsFixed(3),
+      pathFileVcf: file.path,
+      time: time,
+      data: month + " " + day + ", " + year
+    );
+
+    createNewCard(storageModels);
+  }
+  void shareFunction(String path){
+    Share.shareFiles([path], text: 'Share contacts');
+  }
+
+  void redirectToHistory(double number){
+    numberProgress = 0;
+    circleSize = number;
+    _isLoadingNow.sink.add(StateScreen.INIT);
+  }
+
+
+  /// делаем классную симуляцию загрузки.
+  /// если контактов не много, то это идеально
+  /// если же контактов много, то 99% будут немного висеть
+  void changeProgressNumberAndSize(int countFiles) async {
+    double step = 99 / countFiles;
+    double circleStep = 100 / countFiles;
+
+
+    for (int i = 0; i < countFiles; i++){
+      numberProgress += step;
+      circleSize += circleStep;
+      await Future.delayed(const Duration(milliseconds: 10), (){});
+      _updateProgressNumber.sink.add(numberProgress);
+      _updateProgressSize.sink.add(circleSize);
+
+
+    }
+
+    _isLoadingNow.sink.add(StateScreen.END);
+
 
   }
 
-  void saveFile(){
 
-  }
 
   String getMonth(int number){
     switch (number){
-      case 1: return "Jan";
+      case 1: return "January";
         break;
-      case 2: return "Feb";
+      case 2: return "February";
         break;
-      case 3: return "Mar";
+      case 3: return "March";
         break;
-      case 4: return "Apr";
+      case 4: return "April";
         break;
       case 5: return "May";
         break;
-      case 6: return "Jun";
+      case 6: return "June";
         break;
-      case 7: return "Jul";
+      case 7: return "July";
         break;
-      case 8: return "Aug";
+      case 8: return "August";
         break;
-      case 9: return "Sep";
+      case 9: return "September";
         break;
-      case 10: return "Oct";
+      case 10: return "October";
         break;
-      case 11: return "Nov";
+      case 11: return "November";
         break;
-      case 12: return "Dec";
+      case 12: return "December";
         break;
       default:
         return ""; break;
@@ -117,7 +170,12 @@ class MainScreenBloc {
 
   void dispose(){
     _mainListStream?.close();
+    _updateProgressNumber?.close();
+    _updateProgressSize?.close();
+    _isLoadingNow?.close();
   }
+
+
 
 
 }
