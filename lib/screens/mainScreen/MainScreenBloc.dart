@@ -47,9 +47,10 @@ class MainScreenBloc {
     _mainListStream.sink.add(mainList);
   }
 
-
-  void loadContactsToFile(Iterable<Contact> contacts) async {
+  void startLoading(){
     _isLoadingNow.sink.add(StateScreen.LOADING);
+  }
+  void loadContactsToFile(Iterable<Contact> contacts) async {
     changeProgressNumberAndSize(100);
 
     final now = new DateTime.now();
@@ -130,8 +131,6 @@ class MainScreenBloc {
     }
 
     _isLoadingNow.sink.add(StateScreen.END);
-
-
   }
 
 

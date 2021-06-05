@@ -1,5 +1,6 @@
 
 
+import 'package:contacts_app/screens/PrivacyScreen/PrivacyScreen.dart';
 import 'package:contacts_app/screens/mainScreen/MainScreenTabsBLoc.dart';
 import 'package:contacts_app/storageModels/StorageModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:contacts_app/screens/gerenalModel.dart';
-
 import 'MainScreenBloc.dart';
 
 class MainScreen extends StatefulWidget {
@@ -36,12 +36,21 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       else if (_controller.index == 2)
         context.read<MainScreenTapBloc>().add(MainScreenTapEvent.ChangeTapThird);
     });
+
+    Future.delayed(Duration(milliseconds: 1000)).then((value) =>
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PrivacyScreen()),
+        )
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     mainScreenBloc.circleSize = width / 5;
+
+
 
     return DefaultTabController(
       length: 3,
@@ -163,22 +172,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
 
     return Container(
       color: Colors.white,
-      child: Stack(
-        children: [
+      child: StreamBuilder(
+          stream: mainScreenBloc.isLoadingNowStream,
+          initialData: StateScreen.INIT,
+          builder: (context, snap){
 
+            if (snap.data == StateScreen.LOADING){
+              return Stack(
+                children: [
 
-
-
-          StreamBuilder(
-              stream: mainScreenBloc.isLoadingNowStream,
-              initialData: StateScreen.INIT,
-              builder: (context, snap){
-
-                if (snap.data == StateScreen.LOADING){
-                  return Stack(
-                    children: [
-
-                      StreamBuilder(
+                  StreamBuilder(
                       stream: mainScreenBloc.updateProgressSizeStream,
                       initialData: mainScreenBloc.circleSize,
                       builder: (context, snap){
@@ -256,102 +259,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                         );
 
                       }),
+                  StreamBuilder(
+                      stream: mainScreenBloc.updateProgressNumberStream,
+                      initialData: mainScreenBloc.numberProgress,
+                      builder: (context, snap){
+                        double number = snap.data;
 
-                      StreamBuilder(
-                          stream: mainScreenBloc.updateProgressNumberStream,
-                          initialData: mainScreenBloc.numberProgress,
-                          builder: (context, snap){
-                            double number = snap.data;
-
-                            return Center(
-                              child: Text(
-                                number.toInt().toString() + "%",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-
-                                    fontSize: 28,
-                                    fontFamily: 'Bold',
-                                    color: Colors.white
-                                ),
-                              ),
-                            );
-                          }),
-
-                    ],
-                  );
-                }
-                else if ( snap.data == StateScreen.INIT)
-                  return Stack(
-                    children: [
-                      Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            height: screenHeight / 2,
-                            width: double.infinity,
-                            child: Image.asset(
-                              'lib/assets/background_create.png',
-                              fit: BoxFit.fill,
-                            ),
-                          )),
-                      GestureDetector(
-                        onTap: () async {
-
-
-                          //Iterable<Contact> contacts = await ContactsService.getContacts();
-                          var status = await Permission.contacts.status;
-                          print(status);
-
-                          if (status.isUndetermined)
-                            await Permission.contacts.request();
-                          if (status.isDenied)
-                            await Permission.contacts.request();
-
-
-                        },
-                        child: Center(
-                          child: Image.asset(
-                            'lib/assets/white_circle.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          var status = await Permission.contacts.status;
-                          print(status);
-
-                          if (status.isUndetermined)
-                            await Permission.contacts.request();
-                          if (status.isDenied)
-                            await Permission.contacts.request();
-
-
-                        },
-                        child: Center(
-                          child: Image.asset(
-                            'lib/assets/circle_create.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          var status = await Permission.contacts.status;
-
-                          if (status.isUndetermined)
-                            await Permission.contacts.request();
-                          if (status.isDenied)
-                            await Permission.contacts.request();
-
-                          if (status.isGranted){
-                            Iterable<Contact> contacts = await ContactsService.getContacts();
-                            mainScreenBloc.loadContactsToFile(contacts);
-                          }
-
-                        },
-                        child: Center(
+                        return Center(
                           child: Text(
-                            "Create\nBackup",
+                            number.toInt().toString() + "%",
                             textAlign: TextAlign.center,
                             style: TextStyle(
 
@@ -360,145 +276,196 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                                 color: Colors.white
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
 
-                      Align(
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 86,
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    "Backing Up..",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontFamily: 'Bold',
-                                        color: Colors.black
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: 2,),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 24, right: 24),
-                                child: Text(
-                                  "Please sit tight while your contacts are being backed up.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontFamily: 'SemiBold',
-                                      color: Colors.black
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                      ),
-                    ],
-                  );
-                else
-                  return Stack(
-                    children: [
-                      Container(
+                ],
+              );
+            }
+            else if ( snap.data == StateScreen.INIT)
+              return Stack(
+                children: [
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: screenHeight / 2,
                         width: double.infinity,
                         child: Image.asset(
-                          'lib/assets/background.png',
-                          fit: BoxFit.cover,
+                          'lib/assets/background_create.png',
+                          fit: BoxFit.fill,
+                        ),
+                      )),
+                  GestureDetector(
+                    onTap: () async {
+                      startSaveFileFunction();
+                    },
+                    child: Center(
+                      child: Image.asset(
+                        'lib/assets/white_circle.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      startSaveFileFunction();
+                    },
+                    child: Center(
+                      child: Image.asset(
+                        'lib/assets/circle_create.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      startSaveFileFunction();
+
+                    },
+                    child: Center(
+                      child: Text(
+                        "Create\nBackup",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+
+                            fontSize: 28,
+                            fontFamily: 'Bold',
+                            color: Colors.white
                         ),
                       ),
+                    ),
+                  ),
 
-                      Center(
-                        child: Text(
-                          "100%",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-
-                              fontSize: 45,
-                              fontFamily: 'Bold',
-                              color: Colors.white
+                  Align(
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 86,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                "Backing Up..",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontFamily: 'Bold',
+                                    color: Colors.black
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 100, left: 24, right: 24),
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height: 56,
-                              width: double.infinity,
-                              child: FlatButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                color: Colors.white,
-                                onPressed: (){
-                                  _controller.animateTo(0);
-                                  mainScreenBloc.redirectToHistory(MediaQuery.of(context).size.width / 5);
-                                },
-                                child: Text(
-                                  "Open BackUp",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
 
-                                      fontSize: 15,
-                                      fontFamily: 'Bold',
-                                      color: GeneralModel.mainAppColor
-                                  ),
-                                ),
+                          SizedBox(height: 2,),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 24, right: 24),
+                            child: Text(
+                              "Please sit tight while your contacts are being backed up.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'SemiBold',
+                                  color: Colors.black
                               ),
-                            )
-                        ),
-                      ),
-                      Align(
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 86,
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    "Completed!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontFamily: 'Bold',
-                                        color: Colors.white
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                  ),
+                ],
+              );
+            else
+              return Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    child: Image.asset(
+                      'lib/assets/background.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
 
-                              SizedBox(height: 2,),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 24, right: 24),
-                                child: Text(
-                                  "Your backup has been completed and saved to your archive.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontFamily: 'SemiBold',
-                                      color: Colors.white
-                                  ),
+                  Center(
+                    child: Text(
+                      "100%",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+
+                          fontSize: 45,
+                          fontFamily: 'Bold',
+                          color: Colors.white
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 100, left: 24, right: 24),
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 56,
+                          width: double.infinity,
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            color: Colors.white,
+                            onPressed: (){
+                              _controller.animateTo(0);
+                              mainScreenBloc.redirectToHistory(MediaQuery.of(context).size.width / 5);
+                            },
+                            child: Text(
+                              "Open BackUp",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+
+                                  fontSize: 15,
+                                  fontFamily: 'Bold',
+                                  color: GeneralModel.mainAppColor
+                              ),
+                            ),
+                          ),
+                        )
+                    ),
+                  ),
+                  Align(
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 86,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                "Completed!",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontFamily: 'Bold',
+                                    color: Colors.white
                                 ),
                               ),
-                            ],
-                          )
-                      ),
-                    ],
-                  );
+                            ),
+                          ),
+
+                          SizedBox(height: 2,),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 24, right: 24),
+                            child: Text(
+                              "Your backup has been completed and saved to your archive.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'SemiBold',
+                                  color: Colors.white
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                  ),
+                ],
+              );
           }),
-
-
-
-
-        ],
-      ),
     );
   }
 
@@ -689,6 +656,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       ],
     );
 
+  }
+
+  void startSaveFileFunction() async {
+    var status = await Permission.contacts.status;
+
+    if (status.isUndetermined)
+      await Permission.contacts.request();
+    if (status.isDenied)
+      await Permission.contacts.request();
+
+    if (status.isGranted){
+
+      mainScreenBloc.startLoading();
+      Iterable<Contact> contacts = await ContactsService.getContacts();
+      mainScreenBloc.loadContactsToFile(contacts);
+    }
   }
 
 

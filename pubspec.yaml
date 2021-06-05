@@ -29,6 +29,7 @@ dependencies:
   flutter_share_file: ^1.2.1+6
   share: ^2.0.4
   url_launcher: ^6.0.0-nullsafety.7
+  #in_app_review: ^2.0.0-nullsafety
 
 dev_dependencies:
   hive_generator: ^1.1.0
@@ -75,6 +76,10 @@ flutter:
     - family: SemiBold
       fonts:
         - asset: lib/fonts/Montserrat-SemiBold.otf
+    - family: Medium
+      fonts:
+        - asset: lib/fonts/Montserrat-Medium.otf
+
 #    - family: TTMedium
 #      fonts:
 #        - asset: lib/fonts/TTCommons-Medium.ttf
