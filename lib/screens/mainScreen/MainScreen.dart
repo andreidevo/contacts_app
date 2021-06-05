@@ -345,7 +345,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             width: double.infinity,
                             child: Center(
                               child: Text(
-                                "Backing Up..",
+                                "Contacts Backup",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontSize: 25,
@@ -360,7 +360,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                           Padding(
                             padding: const EdgeInsets.only(left: 24, right: 24),
                             child: Text(
-                              "Please sit tight while your contacts are being backed up.",
+                              "Backup your address book to avoid losing your contacts in case something happens to your phone.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 15,
@@ -410,6 +410,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
                             ),
                             color: Colors.white,
                             onPressed: (){
+                              mainScreenBloc.saved = false;
+                              mainScreenBloc.nextPage = false;
                               _controller.animateTo(0);
                               mainScreenBloc.redirectToHistory(MediaQuery.of(context).size.width / 5);
                             },

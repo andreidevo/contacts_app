@@ -11,7 +11,6 @@ void main() {
   runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
 
   @override
@@ -25,15 +24,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => MainScreenTapBloc(),
         ),
-//        BlocProvider(
-//          create: (context) => MainScreenBackBloc(),)
       ],
       child: MaterialApp(
           title: "Contacts",
           debugShowCheckedModeBanner: false,
           home: MainScreen()
-
-
       ),
     );
   }

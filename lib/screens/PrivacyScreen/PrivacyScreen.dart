@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 
-
 class PrivacyScreen extends StatefulWidget {
   @override
   _PrivacyScreenState createState() => _PrivacyScreenState();

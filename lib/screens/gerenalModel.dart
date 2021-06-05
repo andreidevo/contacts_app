@@ -34,7 +34,6 @@ class GeneralModel{
     for (var j in list){
       mainScreenBloc.updateMainListStream(j);
     }
-
   }
 
   void addNewCard(StorageModel storageModel) {
@@ -43,7 +42,6 @@ class GeneralModel{
 
   void launchURL(String url) async =>
       await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
-
 
 }
 

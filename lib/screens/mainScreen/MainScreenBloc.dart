@@ -47,11 +47,12 @@ class MainScreenBloc {
     _mainListStream.sink.add(mainList);
   }
 
+  // начало анимации на моменте взятия контактов, а не после
   void startLoading(){
     _isLoadingNow.sink.add(StateScreen.LOADING);
+    changeProgressNumberAndSize(100);
   }
   void loadContactsToFile(Iterable<Contact> contacts) async {
-    changeProgressNumberAndSize(100);
 
     final now = new DateTime.now();
     String lenContacts = contacts.length.toString();
@@ -62,16 +63,14 @@ class MainScreenBloc {
     String amPm = DateFormat.jm().format(DateFormat("hh:mm:ss").parse(time+":00")).replaceAll(' ', '');
     time = amPm;
 
-
     VCard globalCard = VCard();
     String globalFormattedString = "";
 
+
     for (final contact in contacts) {
       var vCard = VCard();
-
+      // позже можно добавить больше полей
       vCard.formattedName = contact.displayName;
-      for (var phone in contact.emails)
-        print(phone.label);
       print(contact.avatar);
       vCard.birthday = contact.birthday;
       vCard.organization = contact.company;
@@ -79,16 +78,15 @@ class MainScreenBloc {
 
       String formattedString = vCard.getFormattedString();
       globalFormattedString += formattedString;
-      //changeProgressNumberAndSize(contacts.length);
     }
-
 
     String fileName = amPm.replaceAll(":", '') + '.vcf';
     File file = await globalCard.saveMultiContactsToFile(fileName, globalFormattedString);
+    saved = true;
 
-    //_isLoadingNow.sink.add(StateScreen);
-
-
+    if (nextPage == true){
+      _isLoadingNow.sink.add(StateScreen.END);
+    }
 
     int bytesFile = await file.length();
     StorageModel storageModels = StorageModel(
@@ -111,29 +109,35 @@ class MainScreenBloc {
     _isLoadingNow.sink.add(StateScreen.INIT);
   }
 
+  bool saved = false;
+  bool nextPage = false;
 
   /// делаем классную симуляцию загрузки.
   /// если контактов не много, то это идеально
-  /// если же контактов много, то 99% будут немного висеть
+  /// когда контактов больше, то соответственно анимация будет медленее
+
   void changeProgressNumberAndSize(int countFiles) async {
-    double step = 99 / countFiles;
+    double step = 98 / countFiles;
     double circleStep = 100 / countFiles;
+    int timeSleep = 10 + countFiles ~/ 30;
 
 
     for (int i = 0; i < countFiles; i++){
-      numberProgress += step;
-      circleSize += circleStep;
-      await Future.delayed(const Duration(milliseconds: 10), (){});
-      _updateProgressNumber.sink.add(numberProgress);
-      _updateProgressSize.sink.add(circleSize);
 
-
+      if (numberProgress.toInt() < 98){
+        numberProgress += step;
+        circleSize += circleStep;
+        _updateProgressNumber.sink.add(numberProgress);
+        _updateProgressSize.sink.add(circleSize);
+      }
+      await Future.delayed(Duration(milliseconds: timeSleep), (){});
     }
 
-    _isLoadingNow.sink.add(StateScreen.END);
+    nextPage = true;
+    if (saved == true){
+      _isLoadingNow.sink.add(StateScreen.END);
+    }
   }
-
-
 
   String getMonth(int number){
     switch (number){
@@ -173,10 +177,6 @@ class MainScreenBloc {
     _updateProgressSize?.close();
     _isLoadingNow?.close();
   }
-
-
-
-
 }
 
 final mainScreenBloc = MainScreenBloc();
